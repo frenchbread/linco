@@ -1,23 +1,28 @@
 <template lang="html">
-  <div class="stats-header">
-    <span>
-      Stats for <a target="_blank" :href="shortenUrl">{{ shortenUrl }}</a>
-    </span>
-    <button @click.prevent="removeLink()">delete</button>
-  </div>
-
-  <div v-if="!statsLoading">
-    <div v-if="stats.length">
-      <div class="chart-container"></div>
+  <div class="stats">
+    <div class="stats-header">
+      <span>
+        {{ $t('stats.stats_for') }}
+        <a target="_blank" :href="shortenUrl">{{ shortenUrl }}</a>
+      </span>
+      <button @click.prevent="removeLink()">
+        {{ $t('stats.delete_link') }}
+      </button>
     </div>
-    <div v-else>no vists yet :(</div>
+
+    <div v-if="!statsLoading">
+      <div v-if="stats.length">
+        <div id="chart-container"></div>
+      </div>
+      <div v-else>{{ $t('stats.no_visits') }}</div>
+    </div>
+    <div v-else>{{ $t('stats.loading_stats') }}</div>
   </div>
-  <div v-else>loading..</div>
 </template>
 
 <script lang="ts">
 import { computed, onBeforeMount, onMounted, watch } from 'vue'
-import Chartist from 'chartist'
+import Plotly from 'plotly.js-dist'
 import spacetime from 'spacetime'
 
 import router from '@/router'
@@ -60,24 +65,31 @@ export default {
     const initChart = () => {
       if (stats.value.length) {
         setTimeout(() => {
-          new Chartist.Line(
-            '.chart-container',
-            {
-              labels: stats.value.map(({ _id }: { _id: string }) =>
-                spacetime(getMs(_id)).format('{date-ordinal}')
-              ),
-              series: [stats.value.map(({ count }: { count: string }) => count)]
-            },
-            {
-              fullWidth: true,
-              chartPadding: {
-                right: 100,
-                left: 100
-              },
-              axisY: {
-                onlyInteger: true
+          Plotly.newPlot(
+            document.getElementById('chart-container'),
+            [
+              {
+                x: stats.value.map(({ _id }: { _id: string }) =>
+                  spacetime(getMs(_id)).format(
+                    '{date-ordinal} {month-short}, {hour}:{minute}'
+                  )
+                ),
+                y: stats.value.map(({ count }: { count: string }) => count),
+                type: 'bar'
               }
-            }
+            ],
+            {
+              margin: { t: 0 },
+              yaxis: {
+                tickvals: stats.value.map(
+                  ({ count }: { count: string }) => count
+                ),
+                ticktext: stats.value.map(
+                  ({ count }: { count: string }) => count
+                )
+              }
+            },
+            { showSendToCloud: true }
           )
         }, 500)
       }
@@ -105,20 +117,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.stats-header {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  font-size: 1.5rem;
-  padding: 1rem;
-
-  a {
-    font-weight: bold;
-  }
-}
-
-.chart-container {
-  height: 20rem;
+.stats {
   margin: 0 auto;
+  width: 50rem;
+
+  .stats-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    padding: 1rem;
+
+    a {
+      font-weight: bold;
+    }
+  }
+
+  .chart-container {
+    height: 30rem;
+  }
 }
 </style>

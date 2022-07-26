@@ -19,8 +19,6 @@ export default async function (ctx: Context) {
         return
       }
 
-      console.log(spacetime().startOf('month').epoch, Date.now())
-
       const res = await Visit.aggregate([
         {
           $match: {
@@ -33,10 +31,15 @@ export default async function (ctx: Context) {
         {
           $group: {
             _id: {
-              $dateToString: { format: '%Y-%m-%d', date: '$visited_at' } // -%H-%M
+              $dateToString: { format: '%Y-%m-%d-%H-%M', date: '$visited_at' } // -%H-%M
             },
             count: { $sum: 1 },
             hash: { $first: '$hash_ref' }
+          }
+        },
+        {
+          $sort: {
+            visited_at: 1
           }
         }
       ])

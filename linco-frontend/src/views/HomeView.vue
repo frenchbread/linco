@@ -5,21 +5,21 @@
         ref="inputField"
         type="text"
         v-model="input"
-        placeholder="Paste your link here"
+        :placeholder="$t('home.form_placeholder')"
       />
       &nbsp;
-      <button type="submit" name="button">ok</button>
+      <button type="submit" name="button">{{ $t('home.form_submit') }}</button>
     </form>
 
-    <h1>recent urls</h1>
+    <h1>{{ $t('home.recent_urls') }}</h1>
 
     <div v-if="!linksLoading" class="links">
       <div v-if="links.length">
         <LinkCard v-for="link in links" :key="link" :link="link"></LinkCard>
       </div>
-      <div v-else>No links have been shortened yet.</div>
+      <div v-else>{{ $t('home.no_links_found') }}</div>
     </div>
-    <div v-else>loading..</div>
+    <div v-else>{{ $t('home.loading_links') }}</div>
   </div>
 </template>
 

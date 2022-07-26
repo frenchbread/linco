@@ -11,7 +11,7 @@
         <button @click.prevent="showStats(link.hash_ref)">stats</button>
       </span>
     </div>
-    <div class="original-link">
+    <div class="original-link" :title="link.original_url">
       {{ link.original_url }}
     </div>
   </div>
@@ -46,4 +46,10 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.original-link {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+</style>

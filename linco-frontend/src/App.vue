@@ -8,7 +8,8 @@
 </template>
 
 <style lang="scss">
-@import 'chartist/dist/scss/chartist.scss';
+// @import 'chartist/dist/scss/chartist.scss';
+// @import 'frappe-charts/dist/frappe-charts.min.css';
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
